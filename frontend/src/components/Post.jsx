@@ -17,9 +17,20 @@ import { FaRegBookmark } from "react-icons/fa";
 import CommentDialog from "./CommentDialog";
 import { Input } from "./ui/input";
 
-function Post() {
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
+import { toast } from "sonner";
+import { setPosts } from "@/redux/postSlice";
+function Post({ post }) {
+  const dispatch = useDispatch();
+  const { user } = useSelector((store) => store.auth);
+  const { posts } = useSelector((store) => store.post);
+  // const{liked:stateLiked}= useSelector((store)=>store.post);
+
   const [text, setText] = useState("");
-  const [open,setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
+  const [liked, setLiked] = useState(post?.likes.includes(user?._id) || false);
+  const [postLike, setPostLike] = useState(post.likes.length);
   const changeEventHandler = (e) => {
     const inputText = e.target.value;
     if (inputText.trim()) {
@@ -28,16 +39,57 @@ function Post() {
       setText("");
     }
   };
+
+
+  const deletePostHandler = async () => {
+    try {
+      const res = await axios.delete(
+        `http://localhost:8000/api/v1/post/delete/${post?._id}`,
+        { withCredentials: true }
+      );
+
+      if (res.data.success) {
+        toast.success(res.data.message);
+        let updatedPosts = posts.filter(
+          (thisPost) => thisPost?._id != post?._id
+        );
+        dispatch(setPosts(updatedPosts));
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const likeOrDislikeHandler = async () => {
+    try {
+      const action = liked ? "dislike" : "like";
+      const res = await axios.get(
+        `http://localhost:8000/api/v1/post/${post?._id}/${action}`,
+        { withCredentials: true }
+      );
+      if (res.data.success) {
+        const updatedLikes = liked ? postLike - 1 : postLike + 1; 
+        setPostLike(updatedLikes);       
+        toast.success(res.data.message);
+        setLiked((prevData) => !prevData); // i added this logic...
+        // dispatch(setLikes(!stateLiked));
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message);
+    }
+  };
   return (
     <div className="my-8 w-full max-w-sm mx-auto">
       <div className="flex items-center">
         <div className=" flex items-center gap-2 justify-between w-full">
           <div className="flex items-center gap-2">
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarImage src={post?.author?.profilePicture} />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
-            <h1>username</h1>
+            <h1>{post?.author?.username}</h1>
           </div>
           <div>
             <Dialog>
@@ -56,33 +108,43 @@ function Post() {
                 <Button variant={"ghost"} className={"cursor-pointer w-fit "}>
                   Add to favorites
                 </Button>
-                <Button
-                  variant={"ghost"}
-                  className={"cursor-pointer w-fit text-[#ED4956] "}
-                >
-                  Delete
-                </Button>
+
+                {user && user?._id === post?.author?._id && (
+                  <Button
+                    variant={"ghost"}
+                    className={"cursor-pointer w-fit text-[#ED4956] "}
+                    onClick={deletePostHandler}
+                  >
+                    Delete
+                  </Button>
+                )}
               </DialogContent>
             </Dialog>
           </div>
         </div>
       </div>
       <img
-        src="https://images.unsplash.com/photo-1754597302822-4b96f3442d3f?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        src={post?.image}
         alt="post_img"
         className="rounded-sm my-2 w-full aspect-square object-cover"
       />
 
       <div className="flex justify-between">
         <div className="flex gap-3 ">
-          <FaRegHeart
+          <FaHeart
             size={"22px"}
-            className="cursor-pointer hover:text-gray-600"
+            className={`cursor-pointer hover:text-gray-600 ${
+              liked ? "text-red-500" : "text-gray-400"
+            }`}
+            onClick={likeOrDislikeHandler}
           />
+
           <FiMessageCircle
             size={"22px"}
             className="cursor-pointer hover:text-gray-600"
-           onClick={()=>{setOpen(true)}}
+            onClick={() => {
+              setOpen(true);
+            }}
           />
           <IoSend
             size={"22px"}
@@ -91,18 +153,25 @@ function Post() {
         </div>
         <FaRegBookmark size={"22px"} className="" />
       </div>
-      <span className="font-medium block mb-2">1k likes</span>
+      <span className="font-medium block mb-2">{postLike} Likes</span>
       <p>
-        <span className="font-medium mr-2">username</span>
-        caption
+        <span className="font-medium mr-2">{post?.author?.username}</span>
+        {post?.caption}
       </p>
-      <span className="cursor-pointer  hover:text-gray-600" onClick={()=>{setOpen(true)}}>View all 10 comments</span>
+      <span
+        className="cursor-pointer  hover:text-gray-600"
+        onClick={() => {
+          setOpen(true);
+        }}
+      >
+        View all 10 comments
+      </span>
       <CommentDialog open={open} setOpen={setOpen} />
       <div className="flex items-center">
         <Input
           type="text"
           placeholder={"Add a comment..."}
-          className="outline-non text-sm w-full mt-1"
+          className="outline-none text-sm w-full mt-1"
           value={text}
           onChange={changeEventHandler}
         ></Input>

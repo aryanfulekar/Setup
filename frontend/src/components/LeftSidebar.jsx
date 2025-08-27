@@ -14,10 +14,12 @@ import { toast } from "sonner";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import CreatePost from "./CreatePost";
 
 function LeftSidebar() {
   const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
   // Logout Method-------------------------------------------
   const logoutHandler = async () => {
@@ -37,6 +39,8 @@ function LeftSidebar() {
   const sidebarHandler = (item) => {
     if (item.text === "Logout") {
       logoutHandler();
+    } else if (item.text === "Create") {
+      setOpen(true);
     }
   };
 
@@ -63,7 +67,6 @@ function LeftSidebar() {
   ];
   return (
     <div className="fixed top-0 z-10 left-0 px-4 border-r border-gray-300 w-[16%] h-screen">
-      <h1></h1>
       <div className="flex flex-col">
         <h1 className="my-8 pl-3 font-bold text-xl">LOGO</h1>
         <div>
@@ -83,6 +86,7 @@ function LeftSidebar() {
           })}
         </div>
       </div>
+      <CreatePost open={open} setOpen={setOpen}/>
     </div>
   );
 }

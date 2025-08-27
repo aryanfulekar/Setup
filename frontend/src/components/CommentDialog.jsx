@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,25 @@ import { Link } from "react-router-dom";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
 function CommentDialog({ open, setOpen }) {
+  const [text, setText] = useState("");
+
+  const changeEventHandler = (e) => {
+    const inputText = e.target.value;
+    if (inputText.trim()) {
+      setText(inputText);
+    } else {
+      setText("");
+    }
+  };
+
+  const sendMessageHandler =async()=>{
+    try {
+      
+    } catch (error) {
+      
+    }
+  }
+
   return (
     <div>
       <Dialog open={open}>
@@ -29,7 +48,7 @@ function CommentDialog({ open, setOpen }) {
                 className="!w-full !h-full object-cover rounded-l-lg"
               />
             </div>
-            <div className="w-1/2 flex flex-col justify-between">
+            <div className="w-1/2 flex flex-col justify-start">
               <div className="flex items-center justify-between p-4">
                 <div className="flex gap-3 items-center">
                   <Link>
@@ -47,11 +66,35 @@ function CommentDialog({ open, setOpen }) {
                   <DialogTrigger asChild>
                     <MoreHorizontal className="cursor-pointer"></MoreHorizontal>
                   </DialogTrigger>
-                  <DialogContent className={"flex items-center"}>
-
-               
+                  <DialogContent
+                    className={
+                      " flex flex-col items-center text-sm text-center"
+                    }
+                  >
+                    <div className="cursor-pointer w-full  text-[#ED4956] font-bold">
+                      Unfollow
+                    </div>
+                    <div className="cursor-pointer w-full ">
+                      Add to favorite
+                    </div>
                   </DialogContent>
                 </Dialog>
+              </div>
+              <hr />
+              <div className=" flex-1 overflow-y-auto max-h-96 p-4">
+                comments ayenge
+              </div>
+              <div className="p-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Add a comment..."
+                    className="w-full outline-none border border-gray-300 p-2 rounded"
+                    onChange={changeEventHandler}
+                    value={text}
+                  />
+                  <Button disabled={!text.trim()} variant="outline" onClick={sendMessageHandler}>Send</Button>
+                </div>
               </div>
             </div>
           </div>

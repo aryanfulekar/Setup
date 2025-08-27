@@ -52,7 +52,6 @@ function Signup() {
 
   return (
     <div className="flex items-center w-screen h-screen justify-center">
-      <h1>{user?.username}</h1>
       <form
         action=""
         className="shadow-lg flex flex-col gap-5 p-8"
