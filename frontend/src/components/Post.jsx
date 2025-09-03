@@ -20,12 +20,20 @@ import { Input } from "./ui/input";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { toast } from "sonner";
-import { setPosts } from "@/redux/postSlice";
+import {
+  setCommentRefresh,
+  setLikeRefresh,
+  setPosts,
+  setSelectedPost,
+} from "@/redux/postSlice";
+import { Badge } from "./ui/badge";
 function Post({ post }) {
   const dispatch = useDispatch();
   const { user } = useSelector((store) => store.auth);
-  const { posts } = useSelector((store) => store.post);
-  // const{liked:stateLiked}= useSelector((store)=>store.post);
+
+  const { posts, likeRefresh, commentRefresh } = useSelector(
+    (store) => store.post
+  );
 
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
@@ -39,7 +47,6 @@ function Post({ post }) {
       setText("");
     }
   };
-
 
   const deletePostHandler = async () => {
     try {
@@ -69,17 +76,36 @@ function Post({ post }) {
         { withCredentials: true }
       );
       if (res.data.success) {
-        const updatedLikes = liked ? postLike - 1 : postLike + 1; 
-        setPostLike(updatedLikes);       
+        const updatedLikes = liked ? postLike - 1 : postLike + 1;
+        setPostLike(updatedLikes);
         toast.success(res.data.message);
         setLiked((prevData) => !prevData); // i added this logic...
-        // dispatch(setLikes(!stateLiked));
+        dispatch(setLikeRefresh(!likeRefresh));
       }
     } catch (error) {
       console.log(error);
       toast.error(error.response.data.message);
     }
   };
+
+  const commentHandler = async () => {
+    try {
+      const res = await axios.post(
+        `http://localhost:8000/api/v1/post/${post?._id}/comment`,
+        { text },
+        {
+          headers: { "content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      if (res.data.success) {
+        toast.success(res.data.message);
+        dispatch(setCommentRefresh(!commentRefresh));
+        setText("");
+      }
+    } catch (error) {}
+  };
+
   return (
     <div className="my-8 w-full max-w-sm mx-auto">
       <div className="flex items-center">
@@ -89,7 +115,10 @@ function Post({ post }) {
               <AvatarImage src={post?.author?.profilePicture} />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
-            <h1>{post?.author?.username}</h1>
+            <div className="flex gap-2 items-center">
+              <h1>{post?.author?.username}</h1>
+              {user?._id === post?.author?._id&&<Badge variant="secondary">Author</Badge>}
+            </div>
           </div>
           <div>
             <Dialog>
@@ -144,6 +173,7 @@ function Post({ post }) {
             className="cursor-pointer hover:text-gray-600"
             onClick={() => {
               setOpen(true);
+              dispatch(setSelectedPost(post));
             }}
           />
           <IoSend
@@ -159,12 +189,14 @@ function Post({ post }) {
         {post?.caption}
       </p>
       <span
-        className="cursor-pointer  hover:text-gray-600"
+        className="cursor-pointer  hover:text-gray-600 "
         onClick={() => {
           setOpen(true);
+          dispatch(setSelectedPost(post));
         }}
       >
-        View all 10 comments
+        {post?.comments?.length > 0 &&
+          ` View all ${post?.comments?.length} comments`}
       </span>
       <CommentDialog open={open} setOpen={setOpen} />
       <div className="flex items-center">
@@ -175,7 +207,14 @@ function Post({ post }) {
           value={text}
           onChange={changeEventHandler}
         ></Input>
-        {text && <span className="text-[#3BADF8]">Post</span>}
+        {text && (
+          <span
+            onClick={commentHandler}
+            className="text-[#3BADF8] cursor-pointer"
+          >
+            Post
+          </span>
+        )}
       </div>
     </div>
   );
