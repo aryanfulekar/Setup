@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 const useGetAllPost = () => {
   const dispatch = useDispatch();
 
+  const { likeRefresh, commentRefresh } = useSelector((store) => store.post);
+
   // fetchAllPost(start)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const fetchAllPost = async () => {
     try {
@@ -25,7 +27,7 @@ const useGetAllPost = () => {
   // useEffect for network call (Start).....................................................
   useEffect(() => {
     fetchAllPost();
-  }, [dispatch]);
+  }, [dispatch, likeRefresh, commentRefresh]);
   // useEffect for network call (End).......................................................
 };
 
