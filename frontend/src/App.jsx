@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -7,7 +7,12 @@ import Login from "./components/Login";
 import Home from "./components/Home";
 import Profile from "./components/Profile";
 import MainLayout from "./components/MainLayout";
-
+import EditProfile from "./components/EditProfile";
+import ChatPage from "./components/ChatPage";
+import { io } from "socket.io-client"; //
+import { useDispatch, useSelector } from "react-redux";
+import { setSocket } from "./redux/socketSlice";
+import { setOnlineUsers } from "./redux/chatSlice";
 function App() {
   const appRouter = createBrowserRouter([
     {
@@ -15,7 +20,9 @@ function App() {
       element: <MainLayout />,
       children: [
         { path: "/", element: <Home /> },
-        { path: "/profile", element: <Profile /> },
+        { path: "/profile/:id", element: <Profile /> },
+        { path: "/account/edit", element: <EditProfile /> },
+        { path: "/chat", element: <ChatPage /> },
       ],
     },
     {
@@ -27,6 +34,31 @@ function App() {
       element: <Signup />,
     },
   ]);
+
+  const { user } = useSelector((store) => store.auth); //
+  const { socket } = useSelector((store) => store.socketio); //
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (user) {
+      const socketio = io(`http://localhost:8000`, {
+        query: { userId: user?._id },
+        transports: ["websocket"],
+      });
+      dispatch(setSocket(socketio)); //:)
+
+      socketio.on("getOnlineUsers", (onlineUsers) => {
+        dispatch(setOnlineUsers(onlineUsers)); //:)
+      });
+      //  clean up function
+      return () => {
+        if (socketio) {
+          socketio.close();
+          dispatch(setSocket(null));
+        }
+      };
+    }
+  }, [user, dispatch]);
 
   return (
     <>

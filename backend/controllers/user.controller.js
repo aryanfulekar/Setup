@@ -151,7 +151,12 @@ export const getProfile = async (req, res) => {
     }
 
     // Fetch user and exclude password
-    const user = await User.findById(userId).select("-password");
+    const user = await User.findById(userId)
+      .select("-password")
+      .populate({ path: "posts", options: { sort: { createdAt: -1 } } })
+      .populate({ path: "bookmarks", options: { sort: { createdAt: -1 } } })
+      .populate("followers", "username profilePicture")
+      .populate("following", "username profilePicture");
 
     if (!user) {
       return res.status(404).json({

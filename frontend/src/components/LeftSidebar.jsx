@@ -13,13 +13,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { toast } from "sonner";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CreatePost from "./CreatePost";
+import { setSelectedUser } from "@/redux/authSlice";
 
 function LeftSidebar() {
   const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
 
   // Logout Method-------------------------------------------
   const logoutHandler = async () => {
@@ -30,6 +32,7 @@ function LeftSidebar() {
       if (res.data.success) {
         navigate("/login");
         toast.success(res.data.message);
+        dispatch(setSelectedUser(null));
       }
     } catch (error) {
       console.log(error);
@@ -41,6 +44,13 @@ function LeftSidebar() {
       logoutHandler();
     } else if (item.text === "Create") {
       setOpen(true);
+    } else if (item.text === "Profile") {
+      navigate(`/profile/${user?._id}`);
+    } else if (item.text === "Home") {
+      navigate(`/`);
+      dispatch(setSelectedUser(null))
+    } else if (item.text === "Messages") {
+      navigate(`/chat`);
     }
   };
 
@@ -86,7 +96,7 @@ function LeftSidebar() {
           })}
         </div>
       </div>
-      <CreatePost open={open} setOpen={setOpen}/>
+      <CreatePost open={open} setOpen={setOpen} />
     </div>
   );
 }
