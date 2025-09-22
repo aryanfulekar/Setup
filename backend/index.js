@@ -6,7 +6,10 @@ import connectDB from "./utils/db.js";
 
 import userRoute from "./routes/user.route.js";
 import postRoute from "./routes/post.route.js";
-const app = express();
+import { app,server } from "./socket/socket.js";
+// const app = express();
+
+
 dotenv.config(); // Automatically loads .env from the root directory
 // middleware--------------------------------------------------------
 app.use(express.json()); // Middleware to parse JSON requests
@@ -38,7 +41,7 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
 // API'S___________________________________________________________________________
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   connectDB();
   console.log(`Listening to port ${PORT}`);
 });
