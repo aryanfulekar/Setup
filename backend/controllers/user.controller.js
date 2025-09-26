@@ -1,5 +1,6 @@
 import { User } from "../models/user.model.js";
 import { Post } from "../models/post.model.js";
+import { Friendship } from "../models/friendship.model.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cloudinary from "../utils/cloudinary.js";
@@ -351,3 +352,135 @@ export const followOrUnfollow = async (req, res) => {
   }
 };
 // Follow and Unfollow(End)---------------------------------------------------------------------------------
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// ______________________________________________________________________________________________________________________________
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+// -------------------------------------friendRequest start-------------------------------------------
+export const friendRequest = async (req, res) => {
+  try {
+    const whoSendFriendRequest = req.id; // requester (sender)
+    const whoGetFriendRequest = req.params.id; // recipient (receiver)
+
+    if (!whoGetFriendRequest || !whoSendFriendRequest) {
+      return res
+        .status(400)
+        .json({ message: "Something is missing", success: false });
+    }
+    // we can implement here that receiver user exist or not :)
+
+    // Prevent self-request
+    if (whoSendFriendRequest === whoGetFriendRequest) {
+      return res.status(400).json({
+        message: "You cannot send a request to yourself",
+        success: false,
+      });
+    }
+
+    // Check if such request already exists
+    const existingRequest = await Friendship.findOne({
+      requester: whoSendFriendRequest,
+      recipient: whoGetFriendRequest,
+      status: "pending",
+    });
+
+    if (existingRequest) {
+      return res
+        .status(400)
+        .json({ message: "Friend request already sent", success: false });
+    }
+
+    // Create a new friend request
+    const newRequest = await Friendship.create({
+      requester: whoSendFriendRequest,
+      recipient: whoGetFriendRequest,
+      status: "pending",
+    });
+
+    // Update User model: push request ID----------------------------
+    // storing newRequest id, who is sending the request.
+    await User.findByIdAndUpdate(whoSendFriendRequest, {
+      $push: { friendRequestsSent: newRequest._id },
+    });
+
+    // storing newRequest id, who is receiving the request.
+
+    await User.findByIdAndUpdate(whoGetFriendRequest, {
+      $push: { friendRequestsReceived: newRequest._id },
+    });
+
+    return res.status(201).json({
+      message: "Friend request sent successfully",
+      success: true,
+      request: newRequest,
+    });
+  } catch (error) {
+    console.log("Error in friendRequest controller:", error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+    });
+  }
+};
+// -------------------------------------friendRequest end-------------------------------------------
+
+// -------------------------------------get all pending request, send by others (start)-------------------------------------
+
+export const getAllPendingRequest = async (req, res) => {
+  try {
+    const userId = req.id;
+
+    const user = await User.findById(userId)
+      .select("-password")
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~(Not relevant according to me)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      .populate({
+        path: "friendRequestsSent",
+        match: { status: "pending" }, // ✅ only pending
+        options: { sort: { createdAt: -1 } },
+        populate: [
+          { path: "requester", select: "username profilePicture" },
+          { path: "recipient", select: "username profilePicture" },
+        ],
+      })
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~(Not relevant according to me)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      
+      // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~(important according to me let see in future)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      .populate({
+        path: "friendRequestsReceived",
+        match: { status: "pending" }, // ✅ only pending
+        options: { sort: { createdAt: -1 } },
+        populate: [
+          { path: "requester", select: "username profilePicture" },
+          { path: "recipient", select: "username profilePicture" },
+        ],
+      });
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~(important according to me let see in future)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Successfully fetched pending requests 🙂",
+      success: true,
+      pendingSent: user.friendRequestsSent, // ✅ Outgoing
+      pendingReceived: user.friendRequestsReceived, // ✅ Incoming
+    });
+  } catch (error) {
+    console.log("Error in getAllPendingRequest controller:", error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+    });
+  }
+};
+// -------------------------------------get all pending request, send by others (end)-------------------------------------
+
+// ------------------------------------get all pending request, for yourself (start)--------------------------------------
+// export const getAllPendingRequest = async (req, res) => {}
+
+// ------------------------------------get all pending request, for yourself (end)----------------------------------------
