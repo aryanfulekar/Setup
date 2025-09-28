@@ -9,7 +9,7 @@ import Profile from "./components/Profile";
 import MainLayout from "./components/MainLayout";
 import EditProfile from "./components/EditProfile";
 import ChatPage from "./components/ChatPage";
-import { io } from "socket.io-client"; //
+import { io } from "socket.io-client"; // :)
 import { useDispatch, useSelector } from "react-redux";
 import { setSocket } from "./redux/socketSlice";
 import { setOnlineUsers } from "./redux/chatSlice";
@@ -54,11 +54,11 @@ function App() {
       return () => {
         if (socketio) {
           socketio.close();
-          dispatch(setSocket(null));
+          dispatch(setSocket(null));//:)
         }
       };
     }
-  }, [user, dispatch]);
+  }, [user, dispatch]);  
 
   return (
     <>

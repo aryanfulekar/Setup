@@ -6,9 +6,9 @@ import connectDB from "./utils/db.js";
 
 import userRoute from "./routes/user.route.js";
 import postRoute from "./routes/post.route.js";
-import { app,server } from "./socket/socket.js";
+import messageRoute from "./routes/message.route.js";
+import { app, server } from "./socket/socket.js";
 // const app = express();
-
 
 dotenv.config(); // Automatically loads .env from the root directory
 // middleware--------------------------------------------------------
@@ -39,6 +39,7 @@ app.use(cors(corsOptions)); // Apply the CORS middleware
 // });
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
+app.use("/api/v1/message", messageRoute);
 // API'S___________________________________________________________________________
 
 server.listen(PORT, () => {

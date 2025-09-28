@@ -1,5 +1,6 @@
 import { Conversation } from "../models/conversation.model.js";
 import { Message } from "../models/message.model.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 
 // Send Message(start)---------------------------------------------------------
 
@@ -37,7 +38,12 @@ export const sendMessage = async (req, res) => {
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    // SOCKET IO.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~
+    // SOCKET IO.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
+    // SOCKET IO.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~
 
     return res.status(201).json({
       message: "Message sent successfully",
