@@ -22,6 +22,13 @@ const userSchema = new mongoose.Schema(
     friendRequestsReceived: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Friendship" },
     ],
+    // ✅ New field: list of friends
+    friends: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );

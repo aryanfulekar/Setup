@@ -13,6 +13,7 @@ import { io } from "socket.io-client"; // :)
 import { useDispatch, useSelector } from "react-redux";
 import { setSocket } from "./redux/socketSlice";
 import { setOnlineUsers } from "./redux/chatSlice";
+import Test from "./components/Test";
 function App() {
   const appRouter = createBrowserRouter([
     {
@@ -23,6 +24,7 @@ function App() {
         { path: "/profile/:id", element: <Profile /> },
         { path: "/account/edit", element: <EditProfile /> },
         { path: "/chat", element: <ChatPage /> },
+        {path:"/test",element:<Test/>}
       ],
     },
     {

@@ -444,7 +444,7 @@ export const getAllPendingRequest = async (req, res) => {
         ],
       })
       // ~~~~~~~~~~~~~~~~~~~~~~~~~~~(Not relevant according to me)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      
+
       // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~(important according to me let see in future)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       .populate({
         path: "friendRequestsReceived",
@@ -484,3 +484,91 @@ export const getAllPendingRequest = async (req, res) => {
 // export const getAllPendingRequest = async (req, res) => {}
 
 // ------------------------------------get all pending request, for yourself (end)----------------------------------------
+
+// ------------------------------------Accept friend request (start)----------------------------------------
+export const acceptFriendRequest = async (req, res) => {
+  try {
+    const userId = req.id; // recipient (logged-in user)
+    const requesterId = req.params.requesterId; // sender of the request
+    const requestId = req.params.requestId; // friend request document ID
+
+    // Check if request exists
+    const request = await Friendship.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ message: "Friend request not found" });
+    }
+
+    // Ensure the request belongs to the logged-in user (recipient)
+    if (request.recipient.toString() !== userId) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to accept this request" });
+    }
+
+    // ✅ Add each user to the other's friends list & remove request refs
+    await User.findByIdAndUpdate(userId, {
+      $addToSet: { friends: requesterId },
+      $pull: { friendRequestsReceived: requestId },
+    });
+
+    await User.findByIdAndUpdate(requesterId, {
+      $addToSet: { friends: userId },
+      $pull: { friendRequestsSent: requestId },
+    });
+
+    // ✅ Delete the FriendRequest document
+    await Friendship.findByIdAndDelete(requestId);
+
+    res.status(200).json({
+      success: true,
+      message: "Friend request accepted successfully",
+    });
+  } catch (error) {
+    console.error("Error in acceptFriendRequest:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+// ------------------------------------Accept friend request (end)------------------------------------------
+
+// ------------------------------------Reject friend request (start)----------------------------------------
+export const rejectFriendRequest = async (req, res) => {
+  try {
+    const userId = req.id; // recipient (logged-in user)
+    const requesterId = req.params.requesterId; // sender of the request
+    const requestId = req.params.requestId; // friend request document ID
+
+    // Check if request exists
+    const request = await Friendship.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ message: "Friend request not found" });
+    }
+
+    // Ensure the request belongs to the logged-in user (recipient)
+    if (request.recipient.toString() !== userId) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to reject this request" });
+    }
+
+    // ✅ Remove the request from both users' pending lists
+    await User.findByIdAndUpdate(userId, {
+      $pull: { friendRequestsReceived: requestId },
+    });
+
+    await User.findByIdAndUpdate(requesterId, {
+      $pull: { friendRequestsSent: requestId },
+    });
+
+    // ✅ Delete the request from the collection
+    await Friendship.findByIdAndDelete(requestId);
+
+    res.status(200).json({
+      success: true,
+      message: "Friend request rejected successfully",
+    });
+  } catch (error) {
+    console.error("Error in rejectFriendRequest:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+// ------------------------------------Reject friend request (end)------------------------------------------
