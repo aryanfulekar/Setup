@@ -42,6 +42,7 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+
     if (user) {
       const socketio = io(`http://localhost:8000`, {
         query: { userId: user?._id },
@@ -49,6 +50,7 @@ function App() {
       });
       dispatch(setSocket(socketio)); //:)
 
+      
       socketio.on("getOnlineUsers", (onlineUsers) => {
         dispatch(setOnlineUsers(onlineUsers)); //:)
       });

@@ -17,7 +17,7 @@ const io = new Server(server, {
 
 const userSocketMap = {}; //this map stores socket id corresponding the user id; userId -> socketId ; eg {user._id : socket.id} :)
 
-// ___________________________(here function implementation to get socketId by userId) _____________________________
+// _____________________________(here function implementation to get socketId by userId) _____________________________
 // ✅ Utility function
 export const getReceiverSocketId = (receiverId) => {
   return userSocketMap[receiverId];
@@ -29,7 +29,9 @@ io.on("connection", (socket) => {
     userSocketMap[userId] = socket.id;
     console.log(`user connected: UserId: ${userId}, SocketId = ${socket.id}`);
   }
+  // emitting online user...
   io.emit("getOnlineUsers", Object.keys(userSocketMap)); //
+  
   // disconnection----------------------------------------------------------------------------
   socket.on("disconnect", () => {
     if (userId) {

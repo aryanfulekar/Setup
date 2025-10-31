@@ -8,6 +8,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSelector } from "react-redux";
 import axios from "axios";
 function Test() {
@@ -54,15 +73,39 @@ function Test() {
             <DialogTitle>Are you absolutely sure?</DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
-         {pendingUser.map((user)=>{
-          return(
-            <div className="bg-amber-700">
-              {user?._id}
-            </div>
-          )
-         })}
+          {pendingUser.map((user) => {
+            return <div className="bg-amber-700">{user?._id}</div>;
+          })}
         </DialogContent>
       </Dialog>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {pendingUser.map((user) => {
+            return (
+              <DropdownMenuItem>
+                <Avatar>
+                  <AvatarImage src={user?.requester?.profilePicture} />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+                <span>
+                  <Button variant={`secondary`}>Accept</Button>
+                </span>
+                <span>
+                  <Button variant={`Destructive`} className={`bg-red-500`}>
+                    Reject
+                  </Button>
+                </span>
+              </DropdownMenuItem>
+            );
+          })}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+    
     </div>
   );
 }

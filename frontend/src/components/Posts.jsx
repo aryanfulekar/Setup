@@ -3,7 +3,7 @@ import Post from "./Post";
 import { useSelector } from "react-redux";
 
 function Posts() {
-  const { posts } = useSelector((store) => store.post);
+  const { posts } = useSelector((store) => store.post); //:)
 
   return (
     <div className="flex flex-col items-center bg-gray-200">

@@ -425,7 +425,7 @@ export const friendRequest = async (req, res) => {
 };
 // -------------------------------------friendRequest end-------------------------------------------
 
-// -------------------------------------get all pending request, send by others (start)-------------------------------------
+// -------------------------------------get all pending request (start)-------------------------------------
 
 export const getAllPendingRequest = async (req, res) => {
   try {
@@ -478,12 +478,7 @@ export const getAllPendingRequest = async (req, res) => {
     });
   }
 };
-// -------------------------------------get all pending request, send by others (end)-------------------------------------
-
-// ------------------------------------get all pending request, for yourself (start)--------------------------------------
-// export const getAllPendingRequest = async (req, res) => {}
-
-// ------------------------------------get all pending request, for yourself (end)----------------------------------------
+// -------------------------------------get all pending request (end)-------------------------------------
 
 // ------------------------------------Accept friend request (start)----------------------------------------
 export const acceptFriendRequest = async (req, res) => {
