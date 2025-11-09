@@ -26,7 +26,7 @@ function LeftSidebar() {
   // Logout Method-------------------------------------------
   const logoutHandler = async () => {
     try {
-      const res = await axios.get(`https://setup-uvx4.onrender.com/api/v1/user/logout`, {
+      const res = await axios.get(`https://setup-1-l50c.onrender.com/api/v1/user/logout`, {
         withCredentials: true,
       });
       if (res.data.success) {

@@ -11,7 +11,7 @@ const useGetSuggestedUsers = () => {
   const fetchSuggestedUsers = async () => {
     try {
       const res = await axios.get(
-        `https://setup-uvx4.onrender.com/api/v1/user/suggested`,
+        `https://setup-1-l50c.onrender.com/api/v1/user/suggested`,
         {
           withCredentials: true,
         }

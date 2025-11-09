@@ -56,7 +56,7 @@ function EditProfile() {
     try {
       e.preventDefault();
       const res = await axios.post(
-        `https://setup-uvx4.onrender.com/api/v1/user/profile/edit`,
+        `https://setup-1-l50c.onrender.com/api/v1/user/profile/edit`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

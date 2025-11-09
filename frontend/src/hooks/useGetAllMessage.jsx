@@ -12,7 +12,7 @@ const useGetAllMessage = () => {
   // fetchAllMessage(start)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const fetchAllMessage = async () => {
     try {
-      const res = await axios.get(`https://setup-uvx4.onrender.com/api/v1/message/all/${selectedUser?._id}`, {
+      const res = await axios.get(`https://setup-1-l50c.onrender.com/api/v1/message/all/${selectedUser?._id}`, {
         withCredentials: true,
       });
       if (res.data.success) {

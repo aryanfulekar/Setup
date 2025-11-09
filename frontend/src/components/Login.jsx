@@ -29,7 +29,7 @@ function Signup() {
 
     try {
       const res = await axios.post(
-        `https://setup-uvx4.onrender.com/api/v1/user/login`,
+        `https://setup-1-l50c.onrender.com/api/v1/user/login`,
         input,
         {
           headers: { "content-Type": "application/json" },

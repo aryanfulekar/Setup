@@ -52,6 +52,7 @@ app.use(express.static(path.join(_dirname, "/frontend/dist")));
 //   // res.sendFile(path.resolve(_dirname, "frontend", "dist", "index.html"));
 //    res.sendFile(path.join(_dirname, "/frontend/dist/index.html"));
 // });
+
 // API'S___________________________________________________________________________
 
 server.listen(PORT, () => {
