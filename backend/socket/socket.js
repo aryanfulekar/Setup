@@ -6,7 +6,7 @@ const app = express();
 const server = http.createServer(app);
 
 const corsOption = {
-  origin: "http://localhost:5173",
+  origin: process.env.URL,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"], //or "*"
   credentials: true,
 };
