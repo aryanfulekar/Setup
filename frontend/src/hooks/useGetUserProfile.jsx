@@ -11,7 +11,7 @@ const useGetUserProfile = (id) => {
   const fetchUserProfile = async () => {
     try {
       const res = await axios.get(
-        `https://setup-1-l50c.onrender.com/api/v1/user/${id}/profile`,
+        `http://localhost:8000/api/v1/user/${id}/profile`,
         {
           withCredentials: true,
         }

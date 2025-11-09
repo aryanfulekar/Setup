@@ -37,7 +37,7 @@ function Test() {
   const getAllPendingRequest = async () => {
     try {
       const res = await axios.get(
-        `https://setup-1-l50c.onrender.com/api/v1/user/getallpendingrequest`,
+        `http://localhost:8000/api/v1/user/getallpendingrequest`,
         {
           headers: { "content-Type": "application/json" },
           withCredentials: true,

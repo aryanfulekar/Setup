@@ -12,7 +12,7 @@ const useGetAllPost = () => {
   // fetchAllPost(start)~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const fetchAllPost = async () => {
     try {
-      const res = await axios.get(`https://setup-1-l50c.onrender.com/api/v1/post/all`, {
+      const res = await axios.get(`http://localhost:8000/api/v1/post/all`, {
         withCredentials: true,
       });
       if (res.data.success) {
