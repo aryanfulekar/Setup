@@ -3,6 +3,7 @@ import cloudinary from "../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
 import { Comment } from "../models/comment.model.js";
 import * as fs from "fs";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 // Adding new Post(Start)---------------------------------------------------------------------------------
 
 export const addNewPost = async (req, res) => {
@@ -140,7 +141,24 @@ export const likePost = async (req, res) => {
         .json({ message: "Post not found", success: false });
     }
 
-    // Implement socket.io for real-time notification...
+    // Implement socket.io for real-time notification~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~
+    const user = await User.findById(idOfTheUserWhoLikesThePost).select(
+      "username profilePicture"
+    );
+    const postAuthorId = post.author.toString();
+    if (postAuthorId != idOfTheUserWhoLikesThePost) {
+      // emit a notification event
+      const notification = {
+        type: "like",
+        userId: idOfTheUserWhoLikesThePost,
+        userDetails: user,
+        postId,
+        message: "your post was liked",
+      };
+
+      const postOwnerSocketId = getReceiverSocketId(postAuthorId);
+      io.to(postOwnerSocketId).emit("notification", notification);
+    }
 
     return res.status(200).json({ message: "Post liked", success: true });
   } catch (error) {
@@ -172,7 +190,24 @@ export const dislikePost = async (req, res) => {
         .json({ message: "Post not found", success: false });
     }
 
-    // Implement socket.io for real-time notification...
+    // Implement socket.io for real-time notification~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~
+    const user = await User.findById(idOfTheUserWhoDislikesThePost).select(
+      "username profilePicture"
+    );
+    const postAuthorId = post.author.toString();
+    if (postAuthorId != idOfTheUserWhoDislikesThePost) {
+      // emit a notification event
+      const notification = {
+        type: "dislike",
+        userId: idOfTheUserWhoDislikesThePost,
+        userDetails: user,
+        postId,
+        message: "your post was disliked",
+      };
+
+      const postOwnerSocketId = getReceiverSocketId(postAuthorId);
+      io.to(postOwnerSocketId).emit("notification", notification);
+    }
 
     return res.status(200).json({ message: "Post disliked", success: true });
   } catch (error) {

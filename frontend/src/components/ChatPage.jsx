@@ -1,19 +1,53 @@
 import { setSelectedUser } from "@/redux/authSlice";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "./ui/button";
 import { MessageCircleCode } from "lucide-react";
 import { Input } from "./ui/input";
 import Messages from "./Messages";
+import { setMessages } from "@/redux/chatSlice";
+import axios from "axios";
 
 function ChatPage() {
-
+  const [message, setMessage] = useState("");
   const dispatch = useDispatch();
   const { user, suggestedUsers, selectedUser } = useSelector(
     (store) => store.auth
   );
   const { onlineUsers } = useSelector((store) => store.chat); //it's an array
+  const { messages } = useSelector((store) => store.chat);
+  // *********************************************************************************************
+  useEffect(() => {
+    // clean up function :)
+    // for deselecting the selected user :)
+    return () => {
+      dispatch(setSelectedUser(null));
+    };
+  }, []);
+  // *********************************************************************************************
+  //
+
+  const sendMessageHandler = async (receiverId) => {
+    try {
+      const res = await axios.post(
+        `http://localhost:8000/api/v1/message/send/${receiverId}`,
+        { message },
+        {
+          headers: { "content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+
+      if (res.data.success) {
+        dispatch(setMessages([...messages, res.data.newMessage]));
+        setMessage("");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="flex ml-[16%] h-screen max-w-[1350px]">
       <section className="w-full md:w-1/4 my-8">
@@ -21,10 +55,12 @@ function ChatPage() {
         <hr className="mb-4 border-gray-300" />
         <div className="overflow-y-auto h-[80vh]">
           {suggestedUsers.map((suggestedUser) => {
-            const isOnline = onlineUsers.includes(suggestedUser?._id) //:)
+            const isOnline = onlineUsers.includes(suggestedUser?._id); //:)
             return (
               <div
-                onClick={() => dispatch(setSelectedUser(suggestedUser))}
+                onClick={() => {
+                  dispatch(setSelectedUser(suggestedUser));
+                }}
                 className="flex gap-3 items-center p-3 hover:bg-gray-50 cursor-pointer"
               >
                 <Avatar className="w-14 h-14 ">
@@ -69,8 +105,12 @@ function ChatPage() {
               type="text"
               className="border flex-1 mr-2 focus-visible:ring-transparent"
               placeholder="Messages..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
             />
-            <Button>Send</Button>
+            <Button onClick={() => sendMessageHandler(selectedUser?._id)}>
+              Send
+            </Button>
           </div>
         </section>
       ) : (

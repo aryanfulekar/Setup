@@ -9,10 +9,11 @@ import Profile from "./components/Profile";
 import MainLayout from "./components/MainLayout";
 import EditProfile from "./components/EditProfile";
 import ChatPage from "./components/ChatPage";
-import { io } from "socket.io-client"; //
+import { io } from "socket.io-client"; // :)
 import { useDispatch, useSelector } from "react-redux";
 import { setSocket } from "./redux/socketSlice";
 import { setOnlineUsers } from "./redux/chatSlice";
+import Test from "./components/Test";
 function App() {
   const appRouter = createBrowserRouter([
     {
@@ -23,6 +24,7 @@ function App() {
         { path: "/profile/:id", element: <Profile /> },
         { path: "/account/edit", element: <EditProfile /> },
         { path: "/chat", element: <ChatPage /> },
+        {path:"/test",element:<Test/>}
       ],
     },
     {
@@ -40,6 +42,7 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+
     if (user) {
       const socketio = io(`http://localhost:8000`, {
         query: { userId: user?._id },
@@ -47,6 +50,7 @@ function App() {
       });
       dispatch(setSocket(socketio)); //:)
 
+      
       socketio.on("getOnlineUsers", (onlineUsers) => {
         dispatch(setOnlineUsers(onlineUsers)); //:)
       });
@@ -54,11 +58,11 @@ function App() {
       return () => {
         if (socketio) {
           socketio.close();
-          dispatch(setSocket(null));
+          dispatch(setSocket(null));//:)
         }
       };
     }
-  }, [user, dispatch]);
+  }, [user, dispatch]);  
 
   return (
     <>

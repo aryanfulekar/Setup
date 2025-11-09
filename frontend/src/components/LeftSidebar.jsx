@@ -48,7 +48,7 @@ function LeftSidebar() {
       navigate(`/profile/${user?._id}`);
     } else if (item.text === "Home") {
       navigate(`/`);
-      dispatch(setSelectedUser(null))
+      // dispatch(setSelectedUser(null))
     } else if (item.text === "Messages") {
       navigate(`/chat`);
     }

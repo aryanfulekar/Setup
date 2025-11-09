@@ -1,8 +1,11 @@
 import express from "express";
 
 import {
+  acceptFriendRequest,
   editProfile,
   followOrUnfollow,
+  friendRequest,
+  getAllPendingRequest,
   getProfile,
   getSuggestedUsers,
   login,
@@ -25,5 +28,11 @@ router
 router.route("/suggested").get(isAuthenticated, getSuggestedUsers);
 
 router.route("/followorunfollow/:id").get(isAuthenticated, followOrUnfollow);
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+router.route("/friendrequest/:id").get(isAuthenticated,friendRequest);
+router.route("/getallpendingrequest").get(isAuthenticated,getAllPendingRequest);
+router.route(`/acceptpendingrequest/:requesterId/:requestId`).get(isAuthenticated,acceptFriendRequest)
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 export default router;

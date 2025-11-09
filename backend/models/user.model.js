@@ -12,6 +12,23 @@ const userSchema = new mongoose.Schema(
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
     bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
+
+    // 🔥 New fields to store FriendRequest documents~~~~~~~~~~~
+    // it store FriendshipId, who send the request. :)
+    friendRequestsSent: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Friendship" },
+    ],
+    // it store FriendshipId, who get the request. :)
+    friendRequestsReceived: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Friendship" },
+    ],
+    // ✅ New field: list of friends
+    friends: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );
