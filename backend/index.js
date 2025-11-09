@@ -9,8 +9,13 @@ import postRoute from "./routes/post.route.js";
 import messageRoute from "./routes/message.route.js";
 import { app, server } from "./socket/socket.js";
 // const app = express();
+import path from "path";
+import { fileURLToPath } from "url"; // ✅ required for ES modules
 
 dotenv.config(); // Automatically loads .env from the root directory
+
+const _dirname = path.resolve();
+
 // middleware--------------------------------------------------------
 app.use(express.json()); // Middleware to parse JSON requests
 app.use(cookieParser());
@@ -40,6 +45,13 @@ app.use(cors(corsOptions)); // Apply the CORS middleware
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
 app.use("/api/v1/message", messageRoute);
+
+app.use(express.static(path.join(_dirname, "/frontend/dist")));
+
+// app.get("*", (req, res) => {
+//   // res.sendFile(path.resolve(_dirname, "frontend", "dist", "index.html"));
+//    res.sendFile(path.join(_dirname, "/frontend/dist/index.html"));
+// });
 // API'S___________________________________________________________________________
 
 server.listen(PORT, () => {
