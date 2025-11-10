@@ -23,7 +23,7 @@ function Signup() {
 
     try {
       const res = await axios.post(
-        `https://setup-uvx4.onrender.com/api/v1/user/register`,
+        `http://localhost:8000/api/v1/user/register`,
         input,
         {
           headers: { "content-Type": "application/json" },

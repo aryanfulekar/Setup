@@ -47,7 +47,7 @@ function CreatePost({ open, setOpen }) {
     }
     try {
       const res = await axios.post(
-        `https://setup-uvx4.onrender.com/api/v1/post/addpost`,
+        `http://localhost:8000/api/v1/post/addpost`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
