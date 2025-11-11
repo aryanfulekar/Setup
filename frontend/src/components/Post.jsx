@@ -181,7 +181,7 @@ function Post({ post }) {
             className="cursor-pointer hover:text-gray-600"
           />
         </div>
-        <FaRegBookmark size={"22px"} className="" />
+        <FaRegBookmark size={"22px"} className="cursor-pointer hover:text-gray-600" />
       </div>
       <span className="font-medium block mb-2">{postLike} Likes</span>
       <p>
