@@ -31,7 +31,7 @@ function ChatPage() {
   const sendMessageHandler = async (receiverId) => {
     try {
       const res = await axios.post(
-        `https://setup-uvx4.onrender.com/api/v1/message/send/${receiverId}`,
+        `http://localhost:8000/api/v1/message/send/${receiverId}`,
         { message },
         {
           headers: { "content-Type": "application/json" },

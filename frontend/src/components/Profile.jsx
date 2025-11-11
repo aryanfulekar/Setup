@@ -53,12 +53,7 @@ function Profile() {
                     >
                       View archive
                     </Button>
-                    <Button
-                      variant={`secondary`}
-                      className={"hover:bg-gray-200"}
-                    >
-                      Edit Profile
-                    </Button>
+                
                   </div>
                 ) : isFollowing ? (
                   <>
