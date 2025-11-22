@@ -22,7 +22,7 @@ function CommentDialog({ open, setOpen }) {
   
   const dispatch = useDispatch();
 
-  const { selectedPost } = useSelector((store) => store.post);
+  const { selectedPost,commentRefresh } = useSelector((store) => store.post);
   const [text, setText] = useState("");
 
   const changeEventHandler = (e) => {
@@ -47,7 +47,7 @@ function CommentDialog({ open, setOpen }) {
       );
       if (res.data.success) {
         toast.success(res.data.message);
-        dispatch(setCommentRefresh(!setCommentRefresh));
+        dispatch(setCommentRefresh(!commentRefresh));
         setText("");
         dispatch(setSelectedPost({...selectedPost,comments:[res.data.comment,...(selectedPost?.comments || [])]})) // :)
         
